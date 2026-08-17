@@ -1,0 +1,48 @@
+{
+  "name": "pi-websocket-auto-continue",
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Pi extension that automatically continues after a settled WebSocket transport error.",
+  "license": "MIT",
+  "author": "xryul",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/xRyul/pi-websocket-auto-continue.git"
+  },
+  "bugs": {
+    "url": "https://github.com/xRyul/pi-websocket-auto-continue/issues"
+  },
+  "homepage": "https://github.com/xRyul/pi-websocket-auto-continue#readme",
+  "keywords": [
+    "pi-package",
+    "pi",
+    "pi-extension",
+    "websocket",
+    "auto-continue"
+  ],
+  "files": [
+    "index.ts",
+    "README.md",
+    "LICENSE"
+  ],
+  "pi": {
+    "extensions": [
+      "./index.ts"
+    ]
+  },
+  "scripts": {
+    "test": "node --test index.test.mjs",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "peerDependencies": {
+    "@earendil-works/pi-coding-agent": "*"
+  },
+  "devDependencies": {
+    "@earendil-works/pi-coding-agent": "0.84.2",
+    "@types/node": "^24.0.0",
+    "typescript": "^5.9.3"
+  }
+}
