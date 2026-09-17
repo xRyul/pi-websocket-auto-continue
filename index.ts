@@ -13,7 +13,8 @@ function endedWithWebSocketError(messages: AgentEndEvent["messages"]): boolean {
 
 		return (
 			message.stopReason === "error" &&
-			message.errorMessage === WEBSOCKET_ERROR
+			(message.errorMessage === WEBSOCKET_ERROR ||
+				/^WebSocket idle timeout after \d+ms$/.test(message.errorMessage ?? ""))
 		);
 	}
 

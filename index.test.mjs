@@ -70,6 +70,28 @@ test("sends one continue input after an exact settled WebSocket error", async ()
 	assert.equal(harness.sentMessages.length, 1);
 });
 
+test("sends one continue input after settled WebSocket idle timeouts without UI", async () => {
+	for (const timeoutMs of [60000, 120000]) {
+		const harness = createHarness({ hasUI: false });
+
+		await harness.emit("agent_end", {
+			type: "agent_end",
+			messages: [
+				assistantMessage("error", `WebSocket idle timeout after ${timeoutMs}ms`),
+			],
+		});
+		assert.deepEqual(harness.sentMessages, []);
+
+		await harness.emit("agent_settled");
+		await harness.emit("agent_settled");
+
+		assert.deepEqual(harness.sentMessages, [
+			{ content: "continue", options: { deliverAs: "followUp" } },
+		]);
+		assert.deepEqual(harness.notifications, []);
+	}
+});
+
 test("does not continue when a built-in retry succeeds before settling", async () => {
 	const harness = createHarness();
 
@@ -86,12 +108,18 @@ test("does not continue when a built-in retry succeeds before settling", async (
 	assert.deepEqual(harness.sentMessages, []);
 });
 
-test("matches only the exact error and final assistant message", async (t) => {
+test("matches only supported errors and the final assistant message", async (t) => {
 	const nonMatches = [
 		assistantMessage("error", "WebSocket errror"),
 		assistantMessage("error", "websocket error"),
 		assistantMessage("error", "WebSocket error "),
 		assistantMessage("aborted", "WebSocket error"),
+		assistantMessage("aborted", "WebSocket idle timeout after 60000ms"),
+		assistantMessage("stop", "WebSocket idle timeout after 60000ms"),
+		assistantMessage("error", "HTTP idle timeout after 60000ms"),
+		assistantMessage("error", "WebSocket idle timeout after soon"),
+		assistantMessage("error", "WebSocket idle timeout after 60000ms extra"),
+		assistantMessage("error"),
 	];
 
 	for (const message of nonMatches) {

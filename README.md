@@ -1,6 +1,6 @@
 # pi-websocket-auto-continue
 
-When WebSocket error occurs automatically send "continue" as user input.
+Automatically send "continue" as user input after a WebSocket error or idle timeout.
 
 ---
 
@@ -8,14 +8,15 @@ It records the result at `agent_end` and waits for `agent_settled` before acting
  - built-in retry
  - recovery after compaction
  - queued continuation
-It then reads the `stopReason` and `errorMessage`, which both must exactly match following:
 
-```text
-stopReason: "error"
-errorMessage: "WebSocket error"
-```
+It checks the final assistant message. `stopReason` must be `"error"`, and `errorMessage` must be either:
 
-If all matches then it sends "continue" as user input e.g.:  
+- Exactly `WebSocket error`.
+- `WebSocket idle timeout after <digits>ms`, for example `WebSocket idle timeout after 60000ms`.
+
+Aborted runs and other errors do not trigger continuation.
+
+When either message matches, it sends "continue" as user input:
 
 <img width="697" height="227" alt="image" src="https://github.com/user-attachments/assets/0c1ed511-6269-46e8-ba60-39402b693ef0" />
 
