@@ -92,6 +92,23 @@ test("sends one continue input after settled WebSocket idle timeouts without UI"
 	}
 });
 
+test("sends one continue input after settled WebSocket close code 1012", async () => {
+	const harness = createHarness();
+
+	await harness.emit("agent_end", {
+		type: "agent_end",
+		messages: [assistantMessage("error", "WebSocket closed 1012")],
+	});
+	assert.deepEqual(harness.sentMessages, []);
+
+	await harness.emit("agent_settled");
+	await harness.emit("agent_settled");
+
+	assert.deepEqual(harness.sentMessages, [
+		{ content: "continue", options: { deliverAs: "followUp" } },
+	]);
+});
+
 test("does not continue when a built-in retry succeeds before settling", async () => {
 	const harness = createHarness();
 
@@ -119,6 +136,10 @@ test("matches only supported errors and the final assistant message", async (t) 
 		assistantMessage("error", "HTTP idle timeout after 60000ms"),
 		assistantMessage("error", "WebSocket idle timeout after soon"),
 		assistantMessage("error", "WebSocket idle timeout after 60000ms extra"),
+		assistantMessage("aborted", "WebSocket closed 1012"),
+		assistantMessage("stop", "WebSocket closed 1012"),
+		assistantMessage("error", "WebSocket closed 1008"),
+		assistantMessage("error", "WebSocket closed 1012 extra"),
 		assistantMessage("error"),
 	];
 
