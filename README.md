@@ -1,6 +1,6 @@
 # pi-websocket-auto-continue
 
-Automatically send "continue" as user input after a WebSocket error, idle timeout, or service restart (close code 1012).
+Automatically send "continue" as user input after a WebSocket error, idle timeout, or connection closure (close codes 1000 and 1012).
 
 ---
 
@@ -13,6 +13,7 @@ It checks the final assistant message. `stopReason` must be `"error"`, and `erro
 
 - Exactly `WebSocket error`.
 - `WebSocket idle timeout after <digits>ms`, for example `WebSocket idle timeout after 60000ms`.
+- Exactly `WebSocket closed 1000` (normal closure).
 - Exactly `WebSocket closed 1012` (service restart).
 
 Aborted runs and other errors do not trigger continuation.
